@@ -1,3 +1,8 @@
+#!/bin/bash
+
+# Disable various shellcheck rules that produce false positives in PKGBUILD
+# shellcheck disable=SC2034,SC2154
+
 # $Id$
 # Maintainer: Maxime Gauduin <alucryd@archlinux.org>
 # Contributor: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
@@ -13,70 +18,106 @@ arch=('x86_64')
 url='https://bitbucket.org/multicoreware/x265_git'
 license=('GPL')
 depends=('x265' 'lib32-gcc-libs'  'lib32-numactl')
-makedepends=('cmake' 'nasm')
+makedepends=('git' 'cmake' 'nasm')
 provides=('libx265.so')
 source=("https://bitbucket.org/multicoreware/x265_git/downloads/x265_${pkgver}.tar.gz")
 sha256sums=('e70a3335cacacbba0b3a20ec6fecd6783932288ebc8163ad74bcc9606477cae8')
 
-prepare() {
-  cd x265_${pkgver}
-
-  for d in 8 10 12; do
-    if [[ -d build-$d ]]; then
-      rm -rf build-$d
-    fi
-    mkdir build-$d
-  done
-}
+# prepare() {
+#  cd x265_${pkgver}
+#
+#  for d in 8 10 12; do
+#    if [[ -d build-$d ]]; then
+#      rm -rf build-$d
+#    fi
+#    mkdir build-$d
+#  done
+# }
 
 build() {
-  cd x265_${pkgver}/build-12
+#  cd x265_${pkgver}/build-12
   export CC="gcc -m32"
   export CXX="g++ -m32"
   export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
-  
 
-#  cmake ../source \
- #   -DCMAKE_INSTALL_PREFIX='/usr'   -DCMAKE_LIBRARY_PATH='/usr/lib32'   \
-  #  -DHIGH_BIT_DEPTH='TRUE' \
-  #  -DMAIN12='TRUE' \
-  #  -DEXPORT_C_API='TRUE' \
-  #  -DENABLE_CLI='FALSE' \
- #   -DENABLE_SHARED='TRUE' 
- # make
+  cmake -S x265_3.5/source -B build-12 \
+    -DCMAKE_INSTALL_PREFIX='/usr' -DLIB_INSTALL_DIR='lib32' \
+    -DCMAKE_LIBRARY_PATH='/usr/lib32' \
+    -DDETAILED_CU_STATS='OFF' \
+    -DENABLE_AGGRESSIVE_CHECKS='OFF' \
+    -DENABLE_ASSEMBLY='ON' \
+    -DENABLE_CLI='ON' \
+    -DENABLE_HDR12_PLUS='OFF' \
+    -DENABLE_LIBNUMA='ON' \
+    -DENABLE_LIBVMAF='OFF' \
+    -DENABLE_PIC='ON' \
+    -DENABLE_PPA='OFF' \
+    -DENABLE_SHARED='ON' \
+    -DENABLE_SVT_HEVC='OFF' \
+    -DENABLE_TESTS='OFF' \
+    -DENABLE_VTUNE='OFF' \
+    -DEXPORT_C_API='ON' \
+    -DEXTRA_LINK_FLAGS='-L .' \
+    -DHIGH_BIT_DEPTH='OFF' \
+    -DMAIN12='ON' \
+    -Wno-dev
+  make -C build-12
 
-  cd ../build-10
+  cmake -S x265_3.5/source -B build-10 \
+    -DCMAKE_INSTALL_PREFIX='/usr' -DLIB_INSTALL_DIR='lib32' \
+    -DCMAKE_LIBRARY_PATH='/usr/lib32' \
+    -DDETAILED_CU_STATS='OFF' \
+    -DENABLE_AGGRESSIVE_CHECKS='OFF' \
+    -DENABLE_ASSEMBLY='ON' \
+    -DEXPORT_C_API='ON' \
+    -DENABLE_CLI='ON' \
+    -DENABLE_HDR10_PLUS='OFF' \
+    -DENABLE_LIBNUMA='ON' \
+    -DENABLE_LIBVMAF='OFF' \
+    -DENABLE_PIC='ON' \
+    -DENABLE_PPA='OFF' \
+    -DENABLE_SHARED='ON' \
+    -DENABLE_SVT_HEVC='OFF' \
+    -DENABLE_TESTS='OFF' \
+    -DENABLE_VTUNE='OFF' \
+    -DEXTRA_LINK_FLAGS='-L .' \
+    -DHIGH_BIT_DEPTH='OFF' \
+    -DMAIN10='ON' \
+    -Wno-dev
+  make -C build-10
+    
 
-#  cmake ../source \
- #   -DCMAKE_INSTALL_PREFIX='/usr'   -DCMAKE_LIBRARY_PATH='/usr/lib32'   \
- #   -DHIGH_BIT_DEPTH='TRUE' \
- #   -DEXPORT_C_API='FALSE' \
-  #  -DENABLE_CLI='FALSE' \
-  #  -DENABLE_SHARED='FALSE'
- # make
+# -DEXTRA_LIB='x265_main10.a;x265_main12.a' \
 
-  cd ../build-8
-
-  #ln -s ../build-10/libx265.a libx265_main10.a
-  #ln -s ../build-12/libx265.a libx265_main12.a
-
-  cmake ../source \
-    -DCMAKE_INSTALL_PREFIX='/usr' -DLIB_INSTALL_DIR='lib32'  \
-    -DENABLE_SHARED='TRUE' \
-    -DENABLE_HDR10_PLUS='TRUE' \
-    -DEXTRA_LINK_FLAGS='-L .' 
-  #  -DEXTRA_LIB='x265_main10.a;x265_main12.a' \
-   # -DLINKED_10BIT='TRUE' \
-   # -DLINKED_12BIT='TRUE'
-  make
+  cmake -S x265_3.5/source -B build \
+    -DCMAKE_INSTALL_PREFIX='/usr' -DLIB_INSTALL_DIR='lib32' \
+    -DCMAKE_LIBRARY_PATH='/usr/lib32' \
+    -DDETAILED_CU_STATS='OFF' \
+    -DENABLE_AGGRESSIVE_CHECKS='OFF' \
+    -DENABLE_ASSEMBLY='ON' \
+    -DEXPORT_C_API='ON' \
+    -DENABLE_CLI='ON' \
+    -DENABLE_HDR10_PLUS='ON' \
+    -DENABLE_LIBNUMA='ON' \
+    -DENABLE_LIBVMAF='OFF' \
+    -DENABLE_PIC='ON' \
+    -DENABLE_PPA='OFF' \
+    -DENABLE_SHARED='ON' \
+    -DENABLE_SVT_HEVC='OFF' \
+    -DENABLE_TESTS='OFF' \
+    -DENABLE_VTUNE='OFF' \
+    -DEXTRA_LINK_FLAGS='-L.' \
+    -DHIGH_BIT_DEPTH='OFF' \
+    -DLINKED_10BIT='ON' \
+    -DLINKED_12BIT='ON' \
+    -DMAIN10='ON' \
+    -Wno-dev
+    ln -s ../build-10/libx265.a build/libx265_main10.a
+    ln -s ../build-12/libx265.a build/libx265_main12.a
+    make -C build
 }
 
 package() {
-  cd x265_${pkgver}/build-8
-
-  make DESTDIR="${pkgdir}" install
- # sed 's/"libdir=${exec_prefix}/lib"/"libdir=${exec_prefix}/lib32"' ${pkgdir}/usr/lib32/pkgconfig/x265.pc
+  make -C build DESTDIR="${pkgdir}" install
   rm "${pkgdir}"/usr/bin  "${pkgdir}"/usr/include -Rf
- # mv "${pkgdir}"/usr/lib "${pkgdir}"/usr/lib32
 }
-
