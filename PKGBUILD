@@ -1,7 +1,17 @@
 #!/bin/bash
 
-# Disable various shellcheck rules that produce false positives in PKGBUILD
+# Created from the original package by
+
+# Disable various shellcheck rules that produce false positives in this file.
+# Repository rules should be added to the .shellcheckrc file located in the
+# repository root directory, see https://github.com/koalaman/shellcheck/wiki
+# and https://archiv8.github.io for further information.
 # shellcheck disable=SC2034,SC2154
+# [ToDo]: Add files: User documentation
+# [ToDo]: Add files: Tooling
+# [FixMe]: Namcap warnings and errors
+
+
 
 # $Id$
 # Maintainer: Maxime Gauduin <alucryd@archlinux.org>
@@ -9,7 +19,7 @@
 # Contributor: kfgz <kfgz@interia.pl>
 # Mantainer: Lorenzo Ferrillo <lorenzofer at live dot it>
 
-_basename=x265
+_relname=x265
 pkgname=lib32-x265
 pkgver=3.5
 pkgrel=1
@@ -17,11 +27,22 @@ pkgdesc='Open Source H265/HEVC video encoder. 32bit libraries.'
 arch=('x86_64')
 url='https://bitbucket.org/multicoreware/x265_git'
 license=('GPL')
-depends=('x265' 'lib32-gcc-libs'  'lib32-numactl')
-makedepends=('git' 'cmake' 'nasm')
+depends=(
+  'x265' 
+  'lib32-gcc-libs'  
+  'lib32-libnuma'
+  )
+makedepends=(
+  'git' 
+  'cmake' 
+  'nasm')
 provides=('libx265.so')
-source=("https://bitbucket.org/multicoreware/x265_git/downloads/x265_${pkgver}.tar.gz")
-sha256sums=('e70a3335cacacbba0b3a20ec6fecd6783932288ebc8163ad74bcc9606477cae8')
+source=(
+  "https://bitbucket.org/multicoreware/x265_git/downloads/x265_${pkgver}.tar.gz"
+  )
+sha256sums=(
+  'e70a3335cacacbba0b3a20ec6fecd6783932288ebc8163ad74bcc9606477cae8'
+  )
 
 # prepare() {
 #  cd x265_${pkgver}
